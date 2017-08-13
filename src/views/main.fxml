@@ -13,7 +13,7 @@
         </font>
    </Label>
 
-    <Button onAction="#calculatorButtonClicked" text="Calculator">
+    <Button id="calculatorButton" onAction="#calculatorButtonClicked" text="Calculator">
         <VBox.margin>
          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
         </VBox.margin>
@@ -22,7 +22,7 @@
       </font>
     </Button>
 
-   <Button onAction="#exchangeButtonClicked" text="Exchange Rates">
+   <Button id="exchangeButton" onAction="#exchangeButtonClicked" text="Exchange Rates">
        <VBox.margin>
            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
        </VBox.margin>
