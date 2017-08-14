@@ -2,24 +2,13 @@ package controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
-import java.awt.*;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 public class MainController {
-    //private ConverterController converterController;
-    private ExchangeController exchangeController;
 
     @FXML
-    Button exchangeButton;
-
-
-//    private Stage primaryStage; RACZEJ ŹLE
-//
-//
-//    public void setPrimaryStage(Stage stage){
-//        this.primaryStage = stage;
-//    }
-
+    private Button exchangeButton;
 
 
     public void calculatorButtonClicked(ActionEvent actionEvent) {
@@ -27,9 +16,10 @@ public class MainController {
     }
 
     public void exchangeButtonClicked(ActionEvent actionEvent) {
-        //exchangeButton.getScene();
-        //ExchangeController exchangeController = new ExchangeController(primaryStage); ŹLE
-        exchangeController.initExchanger("views/converter.fxml");
+        Stage stage;
+        stage = (Stage) exchangeButton.getScene().getWindow();
+        ExchangeController exchangeController = new ExchangeController();
+        exchangeController.initExchanger("views/exchange.fxml", stage);
         System.out.println("exchange button clicked");
     }
 }
