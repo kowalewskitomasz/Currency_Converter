@@ -50,6 +50,7 @@ public class ExchangeController {
         System.out.println("stop");
 
         populateTableView(arrayOfExchangeRatesTable);
+        calculateExchangeRate(arrayOfExchangeRatesTable);
     }
 
 
@@ -66,6 +67,9 @@ public class ExchangeController {
     }
 
     public void customizeButtonAction(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        CustomizeController customizeController = new CustomizeController();
+        customizeController.initCustomize(stage);
     }
 
     public void populateTableView(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
@@ -89,7 +93,6 @@ public class ExchangeController {
                 horizontalColumn++;
             }
         }
-        calculateExchangeRate(arrayOfExchangeRatesTable);
         System.out.println("waiting");
     }
 

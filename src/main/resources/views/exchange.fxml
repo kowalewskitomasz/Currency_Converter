@@ -17,7 +17,6 @@
         </Label>
     </top>
 
-
     <bottom>
         <ToolBar prefHeight="40" prefWidth="600">
             <Button fx:id="backButton" onAction="#backButtonAction" text="Back">
@@ -33,6 +32,7 @@
             </Button>
         </ToolBar>
     </bottom>
+
    <center>
       <GridPane fx:id="exchangeGridPane">
       </GridPane>
