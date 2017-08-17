@@ -29,6 +29,7 @@ public class CurrencyData {
         return unmarshallerJAXB(xml);
     }
 
+
     public ArrayOfExchangeRatesTable unmarshallerJAXB(File xml){
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ArrayOfExchangeRatesTable.class);
