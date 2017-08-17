@@ -119,10 +119,10 @@ public class ExchangeController {
 
                         for(Rate rate: rateList){
                             if(rate.getCode().equals(label1.getText())){
-                                currencyOne = rate.getMid();
+                                currencyTwo = rate.getMid();
                             }
                             if(rate.getCode().equals(label2.getText())){
-                                currencyTwo = rate.getMid();
+                                currencyOne = rate.getMid();
                             }
                         }
                         double result = currencyOne/currencyTwo;
