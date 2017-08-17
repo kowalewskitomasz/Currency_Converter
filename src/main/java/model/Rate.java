@@ -1,5 +1,7 @@
 package model;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Created by Tomek on 2017-08-17.
  */
@@ -8,6 +10,7 @@ public class Rate {
     String code;
     double mid;
 
+    @XmlElement(name="Currency")
     public String getCurrency() {
         return currency;
     }
@@ -16,6 +19,7 @@ public class Rate {
         this.currency = currency;
     }
 
+    @XmlElement(name="Code")
     public String getCode() {
         return code;
     }
@@ -24,6 +28,7 @@ public class Rate {
         this.code = code;
     }
 
+    @XmlElement(name="Mid")
     public double getMid() {
         return mid;
     }

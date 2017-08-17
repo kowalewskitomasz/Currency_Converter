@@ -1,5 +1,6 @@
 package model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -7,8 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="ArrayOfExchangeRatesTable")
 public class ArrayOfExchangeRatesTable {
+
     ExchangeRatesTable exchangeRatesTable;
 
+    @XmlElement(name="ExchangeRatesTable")
     public ExchangeRatesTable getExchangeRatesTable() {
         return exchangeRatesTable;
     }

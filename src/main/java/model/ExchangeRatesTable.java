@@ -1,5 +1,7 @@
 package model;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Created by Tomek on 2017-08-15.
  */
@@ -10,6 +12,7 @@ public class ExchangeRatesTable {
     String effectiveDate;
     Rates rates;
 
+    @XmlElement(name="Table")
     public String getTable() {
         return table;
     }
@@ -18,6 +21,7 @@ public class ExchangeRatesTable {
         this.table = table;
     }
 
+    @XmlElement(name="No")
     public String getNo() {
         return no;
     }
@@ -26,6 +30,7 @@ public class ExchangeRatesTable {
         this.no = no;
     }
 
+    @XmlElement(name="EffectiveDate")
     public String getEffectiveDate() {
         return effectiveDate;
     }
@@ -34,6 +39,7 @@ public class ExchangeRatesTable {
         this.effectiveDate = effectiveDate;
     }
 
+    @XmlElement(name="Rates")
     public Rates getRates() {
         return rates;
     }

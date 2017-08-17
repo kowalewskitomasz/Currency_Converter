@@ -39,6 +39,7 @@ public class CurrencyData {
             JAXBContext jaxbContext = JAXBContext.newInstance(ArrayOfExchangeRatesTable.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             ArrayOfExchangeRatesTable arrayOfExchangeRatesTable = (ArrayOfExchangeRatesTable) unmarshaller.unmarshal(xml);
+            System.out.println("elo");
 
         } catch (JAXBException e) {
             e.printStackTrace();

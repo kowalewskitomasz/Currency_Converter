@@ -1,5 +1,6 @@
 package model;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
@@ -8,6 +9,7 @@ import java.util.List;
 public class Rates {
     List <Rate> rateList;
 
+    @XmlElement(name="Rate")
     public List<Rate> getRateList() {
         return rateList;
     }
