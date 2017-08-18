@@ -1,0 +1,4 @@
+.game-grid {
+    -fx-background-color: black, white ;
+    -fx-background-insets: 0, 1 ;
+}

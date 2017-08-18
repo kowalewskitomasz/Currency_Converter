@@ -5,11 +5,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -38,6 +40,7 @@ public class ExchangeController {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("views/exchange.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            scene.getStylesheets().add("styles");
 
         } catch (IOException ie) {
             ie.printStackTrace();
@@ -100,13 +103,15 @@ public class ExchangeController {
         Label label = new Label(name);
         label.setPrefSize(70,50);
         label.setFont(new Font("Open Sans", 14));
+        label.getStyleClass().add("game-grid");
+        GridPane.setFillWidth(label, true);
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
         exchangeGridPane.add(label, columnIndex, rowIndex);
     }
 
     public void calculateExchangeRate(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
         List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
-        double currencyOne;
-        double currencyTwo;
 
         for(int i = 0 ; i <= 5 ; i++){
             Label label1 = (Label) getNodeByIndex(i, 0);
@@ -114,25 +119,43 @@ public class ExchangeController {
                 for(int j = 0 ; j <= 10 ; j++){
                     Label label2 = (Label) getNodeByIndex(0, j);
                     if(label2 != null){
-                        currencyOne = 1;
-                        currencyTwo = 1;
+                        double currencyOne = 1;
+                        double currencyTwo = 1;
+                        String nameOfFirstCurrency = "";
+                        String nameOfSecondCurrency = "";
 
                         for(Rate rate: rateList){
                             if(rate.getCode().equals(label1.getText())){
-                                currencyTwo = rate.getMid();
+                                currencyOne = rate.getMid();
+                                nameOfFirstCurrency = rate.getCode();
                             }
                             if(rate.getCode().equals(label2.getText())){
-                                currencyOne = rate.getMid();
+                                currencyTwo = rate.getMid();
+                                nameOfSecondCurrency = rate.getCode();
                             }
                         }
-                        double result = currencyOne/currencyTwo;
+
+                        if(nameOfFirstCurrency == ""){
+                            nameOfFirstCurrency = "PLN";
+                        }
+                        if (nameOfSecondCurrency == "") {
+                            nameOfSecondCurrency = "PLN";
+                        }
+
+                        double result = currencyTwo/currencyOne;
                         String resultString = String.valueOf(result);
-                        resultString = resultString.substring(0, Math.min(resultString.length(), 5));
+                        resultString = resultString.substring(0, Math.min(resultString.length(), 6));
                         setLabelStyle(resultString, j , i);
+                        setTooltip(nameOfFirstCurrency, nameOfSecondCurrency, resultString ,j ,i);
                     }
                 }
             }
         }
+    }
+
+    private void setTooltip(String nameOfFirstCurrency, String nameOfSecondCurrency, String text, int j, int i) {
+        Tooltip tooltip = new Tooltip("1 " + nameOfFirstCurrency + " = " + text + " " + nameOfSecondCurrency);
+        Tooltip.install(getNodeByIndex(i,j),tooltip);
     }
 
     public Node getNodeByIndex(int row, int column){
