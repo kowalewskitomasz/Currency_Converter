@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 <BorderPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ExchangeController">
     <top>
         <VBox>
@@ -26,6 +26,11 @@
                     <Font name="Open Sans" size="14.0" />
                 </font>
             </Button>
+            <Label fx:id="updatedAt">
+                <font>
+                    <Font name="Open Sans" size="12.0" />
+                </font>
+            </Label>
             <Pane HBox.hgrow="ALWAYS" />
             <Button fx:id="customizeButton" onAction="#customizeButtonAction" text="Customize">
                 <font>

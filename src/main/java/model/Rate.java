@@ -9,6 +9,8 @@ public class Rate {
     String currency;
     String code;
     double mid;
+    String no;
+    String effectiveDate;
 
     @XmlElement(name="Currency")
     public String getCurrency() {
@@ -36,5 +38,26 @@ public class Rate {
     public void setMid(double mid) {
         this.mid = mid;
     }
+
+    @XmlElement(name="No")
+    public String getNo() {
+        return no;
+    }
+
+    public void setNo(String no) {
+        this.no = no;
+    }
+
+    @XmlElement(name="EffectiveDate")
+    public String getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(String effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+
+
 
 }

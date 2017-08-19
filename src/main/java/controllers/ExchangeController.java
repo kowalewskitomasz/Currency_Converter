@@ -20,6 +20,8 @@ import model.CurrencyData;
 import model.Rate;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -33,6 +35,8 @@ public class ExchangeController {
     private Button customizeButton;
     @FXML
     private GridPane exchangeGridPane;
+    @FXML
+    private Label updatedAt;
 
 
     public void initExchanger(Stage stage) {
@@ -49,7 +53,7 @@ public class ExchangeController {
 
     public void initialize(){
         CurrencyData currencyData = new CurrencyData();
-        ArrayOfExchangeRatesTable arrayOfExchangeRatesTable = currencyData.init();
+        ArrayOfExchangeRatesTable arrayOfExchangeRatesTable = currencyData.getTableAForAllCurrencies();
         System.out.println("stop");
 
         populateTableView(arrayOfExchangeRatesTable);
@@ -77,6 +81,7 @@ public class ExchangeController {
 
     public void populateTableView(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
         List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
+        updatedAt.setText("Updated on: " + arrayOfExchangeRatesTable.getExchangeRatesTable().getEffectiveDate() + " via api.nbp.pl");
         exchangeGridPane.setPadding(new Insets(10, 10, 10, 10));
         int verticalColumn = 2;
         int horizontalColumn = 2;
@@ -135,16 +140,18 @@ public class ExchangeController {
                             }
                         }
 
-                        if(nameOfFirstCurrency == ""){
+                        if(nameOfFirstCurrency.equals("")){
                             nameOfFirstCurrency = "PLN";
                         }
-                        if (nameOfSecondCurrency == "") {
+                        if (nameOfSecondCurrency.equals("")) {
                             nameOfSecondCurrency = "PLN";
                         }
 
                         double result = currencyOne/currencyTwo;
-                        String resultString = String.valueOf(result);
-                        resultString = resultString.substring(0, Math.min(resultString.length(), 6));
+                        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+                        decimalFormat.setRoundingMode(RoundingMode.CEILING);
+                        String resultString = decimalFormat.format(result);
+
                         setLabelStyle(resultString, j , i);
                         setTooltip(nameOfFirstCurrency, nameOfSecondCurrency, resultString ,j ,i);
                     }

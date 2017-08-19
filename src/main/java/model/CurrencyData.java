@@ -17,8 +17,9 @@ import java.io.File;
 public class CurrencyData {
 
     public ArrayOfExchangeRatesTable arrayOfExchangeRatesTable;
+    public ExchangeRatesSeries exchangeRatesSeries;
 
-    public ArrayOfExchangeRatesTable init(){
+    public ArrayOfExchangeRatesTable getTableAForAllCurrencies(){
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://api.nbp.pl/api/exchangerates/tables");
         WebTarget secondTarget = target.path("A");
@@ -26,16 +27,28 @@ public class CurrencyData {
         Invocation.Builder invocationBuilder = secondTarget.request(MediaType.APPLICATION_XML_TYPE);
         Response response = invocationBuilder.get();
         File xml = response.readEntity(File.class);
-        return unmarshallerJAXB(xml);
+        return unmarshallerJAXBForTableA(xml);
+    }
+
+    public ExchangeRatesSeries getInfoForChart(String currencyAndDates){
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://api.nbp.pl/api/exchangerates/rates/A");
+        WebTarget secondTarget = target.path(currencyAndDates);
+
+        Invocation.Builder invocationBuilder = secondTarget.request(MediaType.APPLICATION_XML_TYPE);
+        Response response = invocationBuilder.get();
+        File xml = response.readEntity(File.class);
+        return unmarshallerJAXBForCharts(xml);
+
     }
 
 
-    public ArrayOfExchangeRatesTable unmarshallerJAXB(File xml){
+    public ArrayOfExchangeRatesTable unmarshallerJAXBForTableA(File xml){
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ArrayOfExchangeRatesTable.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             arrayOfExchangeRatesTable = (ArrayOfExchangeRatesTable) unmarshaller.unmarshal(xml);
-            System.out.println("unmarshal done");
+            System.out.println("unmarshal table done");
 
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -44,4 +57,20 @@ public class CurrencyData {
             return arrayOfExchangeRatesTable;
         }
     }
+
+    public ExchangeRatesSeries unmarshallerJAXBForCharts(File xml){
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(ExchangeRatesSeries.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            exchangeRatesSeries = (ExchangeRatesSeries) unmarshaller.unmarshal(xml);
+            System.out.println("unmarshal chart done");
+
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return exchangeRatesSeries;
+        }
+    }
+
 }
