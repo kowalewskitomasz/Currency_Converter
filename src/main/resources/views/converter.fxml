@@ -16,7 +16,7 @@
     <center>
         <HBox alignment="CENTER" prefWidth="600" spacing="50">
             <padding>
-                <Insets bottom="40" left="40" right="40" top="40" />
+                <Insets bottom="40" left="40" right="40" top="60" />
             </padding>
 
         <VBox prefWidth="200">
@@ -40,6 +40,8 @@
                     <Font name="Open Sans" size="16.0" />
                 </font>
             </Label>
+
+            <!-- TUTAJ POWINIEN ZMIESCIC SIE CHART POROWNUJACY KURSY WALUT NA PRZESTRZENI CZASU -->
 
         </VBox>
 
