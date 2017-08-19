@@ -142,7 +142,7 @@ public class ExchangeController {
                             nameOfSecondCurrency = "PLN";
                         }
 
-                        double result = currencyTwo/currencyOne;
+                        double result = currencyOne/currencyTwo;
                         String resultString = String.valueOf(result);
                         resultString = resultString.substring(0, Math.min(resultString.length(), 6));
                         setLabelStyle(resultString, j , i);

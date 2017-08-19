@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <BorderPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ExchangeController">
     <top>
+        <VBox>
         <Label alignment="CENTER" prefHeight="60.0" prefWidth="600.0" text="Exchange Rates" textAlignment="CENTER">
             <font>
                 <Font name="Open Sans" size="36.0" />
             </font>
         </Label>
+            <Label alignment="CENTER" prefHeight="25.0" prefWidth="600.0" text="1 currency from left = x currency from top" textAlignment="CENTER">
+                <font>
+                    <Font name="Open Sans" size="14.0" />
+                </font>
+            </Label>
+        </VBox>
     </top>
 
     <bottom>
