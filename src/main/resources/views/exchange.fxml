@@ -6,12 +6,12 @@
 <BorderPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ExchangeController">
     <top>
         <VBox>
-        <Label alignment="CENTER" prefHeight="60.0" prefWidth="600.0" text="Exchange Rates" textAlignment="CENTER">
+        <Label alignment="CENTER" prefHeight="60.0" prefWidth="Infinity" text="Exchange Rates" textAlignment="CENTER">
             <font>
                 <Font name="Open Sans" size="36.0" />
             </font>
         </Label>
-            <Label alignment="CENTER" prefHeight="25.0" prefWidth="600.0" text="1 currency from left = x currency from top" textAlignment="CENTER">
+            <Label alignment="CENTER" prefHeight="25.0" prefWidth="Infinity" text="1 currency from left = x currency from top" textAlignment="CENTER">
                 <font>
                     <Font name="Open Sans" size="14.0" />
                 </font>
@@ -41,7 +41,7 @@
     </bottom>
 
    <center>
-      <GridPane fx:id="exchangeGridPane">
+      <GridPane fx:id="exchangeGridPane" alignment="CENTER">
       </GridPane>
    </center>
 

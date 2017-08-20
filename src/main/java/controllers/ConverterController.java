@@ -7,6 +7,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.ArrayOfExchangeRatesTable;
@@ -40,6 +44,12 @@ public class ConverterController {
     private TextField secondCurrencyTextField;
     @FXML
     private Label updatedAt;
+    @FXML
+    private LineChart lineChart;
+    @FXML
+    private NumberAxis numberAxis;
+    @FXML
+    private CategoryAxis categoryAxis;
 
     ArrayOfExchangeRatesTable arrayOfExchangeRatesTable;
 
@@ -94,7 +104,7 @@ public class ConverterController {
     public void setupComboBoxes(){
         ObservableList<String> list = parseRatelistToStringList(arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList());
         firstCurrency.setItems(list);
-        firstCurrency.getSelectionModel().select(0);
+        firstCurrency.getSelectionModel().select(3);
         secondCurrency.setItems(list);
         secondCurrency.getSelectionModel().select(8);
         updatedAt.setText("Updated on: " + arrayOfExchangeRatesTable.getExchangeRatesTable().getEffectiveDate() + " via api.nbp.pl");
@@ -165,6 +175,7 @@ public class ConverterController {
 
     public void comboBoxAction(ActionEvent actionEvent) {
         getTextFieldValueAndCalculate(firstCurrencyTextField.getText());
+        collectDataForChart();
     }
 
     public void collectDataForChart(){
@@ -172,18 +183,115 @@ public class ConverterController {
         String secondCurrencyValue = secondCurrency.getValue().substring(0,3);
 
         String todaysDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dateSixMonthsAgo = LocalDate.now().minusMonths(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String dateSixMonthsAgo = LocalDate.now().minusMonths(12).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-            CurrencyData currencyData = new CurrencyData();
+        CurrencyData currencyData = new CurrencyData();
+
+        ExchangeRatesSeries exchangeRatesSeries1 = new ExchangeRatesSeries();
+        ExchangeRatesSeries exchangeRatesSeries2 = new ExchangeRatesSeries();
+
         if(!firstCurrencyValue.equals("PLN")) {
-            ExchangeRatesSeries exchangeRatesSeries1 = currencyData.getInfoForChart(firstCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
+            exchangeRatesSeries1 = currencyData.getInfoForChart(firstCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
             System.out.println("zebrane dane do czarta dla waluty 1");
         }
         if(!secondCurrencyValue.equals("PLN")) {
-            ExchangeRatesSeries exchangeRatesSeries2 = currencyData.getInfoForChart(secondCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
+            exchangeRatesSeries2 = currencyData.getInfoForChart(secondCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
             System.out.println("zebrane dane do czarta dla waluty 2");
         }
+
+        drawChart(exchangeRatesSeries1, exchangeRatesSeries2);
+
     }
+
+    private void drawChart(ExchangeRatesSeries exchangeRatesSeries1, ExchangeRatesSeries exchangeRatesSeries2) {
+        if (exchangeRatesSeries1.getRates() != null && exchangeRatesSeries2.getRates() != null) {
+            double max = 0;
+            double min = 100;
+
+            List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
+            List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
+
+            XYChart.Series series = new XYChart.Series();
+            series.setName(exchangeRatesSeries1.getCode() + " to " + exchangeRatesSeries2.getCode() + " Chart");
+            for (int i = 0; i < rateList1.size(); i++) {
+                rateList1.get(i).setMid(rateList1.get(i).getMid() / rateList2.get(i).getMid());
+
+                if (rateList1.get(i).getMid() > max) {
+                    max = rateList1.get(i).getMid();
+                }
+                if (rateList1.get(i).getMid() < min) {
+                    min = rateList1.get(i).getMid();
+                }
+
+                series.getData().add(new XYChart.Data(rateList1.get(i).getEffectiveDate(), rateList1.get(i).getMid()));
+            }
+
+            numberAxis.setAutoRanging(false);
+            numberAxis.setLowerBound(min);
+            numberAxis.setUpperBound(max);
+
+            lineChart.getData().retainAll();
+            lineChart.getData().add(series);
+        } else if (exchangeRatesSeries1.getRates() == null && exchangeRatesSeries2.getRates() != null) {
+            double max = 0;
+            double min = 100;
+
+            List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
+
+            XYChart.Series series = new XYChart.Series();
+            series.setName("PLN to " + exchangeRatesSeries2.getCode() + " Chart");
+            for (int i = 0; i < rateList2.size(); i++) {
+                rateList2.get(i).setMid(1 / rateList2.get(i).getMid());
+
+                if (rateList2.get(i).getMid() > max) {
+                    max = rateList2.get(i).getMid();
+                }
+                if (rateList2.get(i).getMid() < min) {
+                    min = rateList2.get(i).getMid();
+                }
+                series.getData().add(new XYChart.Data(rateList2.get(i).getEffectiveDate(), rateList2.get(i).getMid()));
+
+            }
+            numberAxis.setAutoRanging(false);
+            numberAxis.setLowerBound(min);
+            numberAxis.setUpperBound(max);
+
+            lineChart.getData().retainAll();
+            lineChart.getData().add(series);
+
+        } else if (exchangeRatesSeries1.getRates() != null && exchangeRatesSeries2.getRates() == null) {
+            double max = 0;
+            double min = 100;
+            List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
+
+            XYChart.Series series = new XYChart.Series();
+            series.setName(exchangeRatesSeries1.getCode() + " to PLN Chart");
+            for (int i = 0; i < rateList1.size(); i++) {
+
+                if (rateList1.get(i).getMid() > max) {
+                    max = rateList1.get(i).getMid();
+                }
+                if (rateList1.get(i).getMid() < min) {
+                    min = rateList1.get(i).getMid();
+                }
+                series.getData().add(new XYChart.Data(rateList1.get(i).getEffectiveDate(), rateList1.get(i).getMid()));
+
+            }
+            numberAxis.setAutoRanging(false);
+            numberAxis.setLowerBound(min);
+            numberAxis.setUpperBound(max);
+
+            lineChart.getData().retainAll();
+            lineChart.getData().add(series);
+
+        }
+    }
+//
+//    private void setTooltip(Object data) {
+//
+//        Tooltip tooltip = new Tooltip("siemabii");
+//        Tooltip.install(data,tooltip);
+//    }
 
 
 }
