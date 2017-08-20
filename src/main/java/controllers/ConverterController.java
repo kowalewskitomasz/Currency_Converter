@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
@@ -65,7 +66,6 @@ public class ConverterController {
         );
 
         collectDataForChart();
-        //TODO zbieranie danych działa, wymyśl jak zrobić z nich sensowne wykresy
     }
 
     public void initConverter(Stage stage) {
@@ -211,7 +211,7 @@ public class ConverterController {
             List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
             List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
 
-            XYChart.Series series = new XYChart.Series();
+            XYChart.Series<String,Double> series = new XYChart.Series();
             series.setName(exchangeRatesSeries1.getCode() + " to " + exchangeRatesSeries2.getCode() + " Chart");
             for (int i = 0; i < rateList1.size(); i++) {
                 rateList1.get(i).setMid(rateList1.get(i).getMid() / rateList2.get(i).getMid());
@@ -232,13 +232,18 @@ public class ConverterController {
 
             lineChart.getData().retainAll();
             lineChart.getData().add(series);
+
+            for(XYChart.Data<String,Double> o : series.getData()){
+                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
+            }
+
         } else if (exchangeRatesSeries1.getRates() == null && exchangeRatesSeries2.getRates() != null) {
             double max = 0;
             double min = 100;
 
             List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
 
-            XYChart.Series series = new XYChart.Series();
+            XYChart.Series<String, Double> series = new XYChart.Series();
             series.setName("PLN to " + exchangeRatesSeries2.getCode() + " Chart");
             for (int i = 0; i < rateList2.size(); i++) {
                 rateList2.get(i).setMid(1 / rateList2.get(i).getMid());
@@ -259,12 +264,17 @@ public class ConverterController {
             lineChart.getData().retainAll();
             lineChart.getData().add(series);
 
+            for(XYChart.Data<String,Double> o : series.getData()){
+                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
+            }
+
+
         } else if (exchangeRatesSeries1.getRates() != null && exchangeRatesSeries2.getRates() == null) {
             double max = 0;
             double min = 100;
             List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
 
-            XYChart.Series series = new XYChart.Series();
+            XYChart.Series<String, Double> series = new XYChart.Series();
             series.setName(exchangeRatesSeries1.getCode() + " to PLN Chart");
             for (int i = 0; i < rateList1.size(); i++) {
 
@@ -284,14 +294,23 @@ public class ConverterController {
             lineChart.getData().retainAll();
             lineChart.getData().add(series);
 
+            for(XYChart.Data<String,Double> o : series.getData()){
+                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
+            }
+
+
         }
+
+
+
+
     }
-//
-//    private void setTooltip(Object data) {
-//
-//        Tooltip tooltip = new Tooltip("siemabii");
-//        Tooltip.install(data,tooltip);
-//    }
+
+    private void setTooltip(Node node, String tooltip) {
+
+        Tooltip tooltip1 = new Tooltip(tooltip);
+        Tooltip.install(node, tooltip1);
+    }
 
 
 }
