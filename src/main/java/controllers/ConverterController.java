@@ -132,8 +132,6 @@ public class ConverterController {
             decimalFormat.setRoundingMode(RoundingMode.CEILING);
             String resultString = decimalFormat.format(result);
             secondCurrencyTextField.setText(resultString);
-
-            System.out.println(firstCurrencyAmount);
         }
     }
 
@@ -188,11 +186,9 @@ public class ConverterController {
 
         if (!firstCurrencyValue.equals("PLN")) {
             exchangeRatesSeries1 = currencyData.getInfoForChart(firstCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
-            System.out.println("zebrane dane do czarta dla waluty 1");
         }
         if (!secondCurrencyValue.equals("PLN")) {
             exchangeRatesSeries2 = currencyData.getInfoForChart(secondCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
-            System.out.println("zebrane dane do czarta dla waluty 2");
         }
 
         if (exchangeRatesSeries1.getRates() == null && exchangeRatesSeries2.getRates() != null) {
@@ -208,6 +204,11 @@ public class ConverterController {
             for (Rate element : exchangeRatesSeries2.getRates().getRateList()) {
                 element.setMid(1.0);
             }
+        }
+
+        if(exchangeRatesSeries2.getRates() == null && exchangeRatesSeries2.getRates() == null){
+            exchangeRatesSeries1 = currencyData.getInfoForChart("EUR" + "/" + thisManyDaysAgo + "/" + todaysDate);
+            exchangeRatesSeries2 = currencyData.getInfoForChart("EUR" + "/" + thisManyDaysAgo + "/" + todaysDate);
         }
 
         drawChart(exchangeRatesSeries1, exchangeRatesSeries2);

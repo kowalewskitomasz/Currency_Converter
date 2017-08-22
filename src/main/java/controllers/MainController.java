@@ -20,13 +20,11 @@ public class MainController {
         stage = (Stage) calculatorButton.getScene().getWindow();
         ConverterController converterController = new ConverterController();
         converterController.initConverter(stage);
-        System.out.println("calculator button clicked");
     }
 
     public void exchangeButtonClicked(ActionEvent actionEvent) {
         stage = (Stage) exchangeButton.getScene().getWindow();
         ExchangeController exchangeController = new ExchangeController();
         exchangeController.initExchanger(stage);
-        System.out.println("exchange button clicked");
     }
 }

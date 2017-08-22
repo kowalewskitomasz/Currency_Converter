@@ -48,7 +48,6 @@ public class CurrencyData {
             JAXBContext jaxbContext = JAXBContext.newInstance(ArrayOfExchangeRatesTable.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             arrayOfExchangeRatesTable = (ArrayOfExchangeRatesTable) unmarshaller.unmarshal(xml);
-            System.out.println("unmarshal table done");
 
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -70,7 +69,6 @@ public class CurrencyData {
             JAXBContext jaxbContext = JAXBContext.newInstance(ExchangeRatesSeries.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             exchangeRatesSeries = (ExchangeRatesSeries) unmarshaller.unmarshal(xml);
-            System.out.println("unmarshal chart done");
 
         } catch (JAXBException e) {
             e.printStackTrace();
