@@ -54,6 +54,13 @@ public class CurrencyData {
             e.printStackTrace();
         }
         finally {
+            Rate ratePLN = new Rate();
+            ratePLN.setMid(1);
+            ratePLN.setCode("PLN");
+            ratePLN.setCurrency("polski złoty");
+
+            arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList().add(ratePLN);
+
             return arrayOfExchangeRatesTable;
         }
     }
@@ -69,6 +76,7 @@ public class CurrencyData {
             e.printStackTrace();
         }
         finally {
+
             return exchangeRatesSeries;
         }
     }

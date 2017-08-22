@@ -115,17 +115,18 @@ public class ExchangeController {
         exchangeGridPane.add(label, columnIndex, rowIndex);
     }
 
+
     public void calculateExchangeRate(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
         List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
 
+        double currencyOne = 1;
+        double currencyTwo = 1;
         for(int i = 0 ; i <= 5 ; i++){
             Label label1 = (Label) getNodeByIndex(i, 0);
             if(label1 != null) {
                 for(int j = 0 ; j <= 10 ; j++){
                     Label label2 = (Label) getNodeByIndex(0, j);
                     if(label2 != null){
-                        double currencyOne = 1;
-                        double currencyTwo = 1;
                         String nameOfFirstCurrency = "";
                         String nameOfSecondCurrency = "";
 
@@ -138,13 +139,6 @@ public class ExchangeController {
                                 currencyTwo = rate.getMid();
                                 nameOfSecondCurrency = rate.getCode();
                             }
-                        }
-
-                        if(nameOfFirstCurrency.equals("")){
-                            nameOfFirstCurrency = "PLN";
-                        }
-                        if (nameOfSecondCurrency.equals("")) {
-                            nameOfSecondCurrency = "PLN";
                         }
 
                         double result = currencyOne/currencyTwo;

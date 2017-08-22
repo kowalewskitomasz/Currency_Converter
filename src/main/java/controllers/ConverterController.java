@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -49,12 +48,11 @@ public class ConverterController {
     private LineChart lineChart;
     @FXML
     private NumberAxis numberAxis;
-    @FXML
-    private CategoryAxis categoryAxis;
 
     ArrayOfExchangeRatesTable arrayOfExchangeRatesTable;
+    int howManyDaysOnChart = 90;
 
-    public void initialize(){
+    public void initialize() {
         CurrencyData currencyData = new CurrencyData();
         arrayOfExchangeRatesTable = currencyData.getTableAForAllCurrencies();
 
@@ -65,7 +63,7 @@ public class ConverterController {
                 (observable, oldValue, newValue) -> getTextFieldValueAndCalculate(newValue)
         );
 
-        collectDataForChart();
+        collectDataForChart(howManyDaysOnChart);
     }
 
     public void initConverter(Stage stage) {
@@ -91,20 +89,20 @@ public class ConverterController {
         }
     }
 
-    public ObservableList<String> parseRatelistToStringList(List <Rate> rateList){
+    public ObservableList<String> parseRatelistToStringList(List<Rate> rateList) {
         ArrayList<String> stringList = new ArrayList<String>();
         stringList.add("PLN" + " - " + "polski złoty");
-        for (Rate element: rateList){
+        for (Rate element : rateList) {
             stringList.add(element.getCode() + " - " + element.getCurrency());
         }
         ObservableList<String> observableList = FXCollections.observableList(stringList);
         return observableList;
     }
 
-    public void setupComboBoxes(){
+    public void setupComboBoxes() {
         ObservableList<String> list = parseRatelistToStringList(arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList());
         firstCurrency.setItems(list);
-        firstCurrency.getSelectionModel().select(3);
+        firstCurrency.getSelectionModel().select(0);
         secondCurrency.setItems(list);
         secondCurrency.getSelectionModel().select(8);
         updatedAt.setText("Updated on: " + arrayOfExchangeRatesTable.getExchangeRatesTable().getEffectiveDate() + " via api.nbp.pl");
@@ -112,7 +110,7 @@ public class ConverterController {
 
 
     public void getTextFieldValueAndCalculate(String firstCurrencyAmountString) {
-        if(!firstCurrencyAmountString.equals("")) {
+        if (!firstCurrencyAmountString.equals("")) {
             String firstCurrencyValue = firstCurrency.getValue().substring(0, 3);
             String secondCurrencyValue = secondCurrency.getValue().substring(0, 3);
             double firstCurrencyRate = 1;
@@ -139,14 +137,12 @@ public class ConverterController {
         }
     }
 
-
     public void swapCurrencies(ActionEvent actionEvent) {
         int first = firstCurrency.getSelectionModel().getSelectedIndex();
         int second = secondCurrency.getSelectionModel().getSelectedIndex();
 
         secondCurrency.getSelectionModel().select(first);
         firstCurrency.getSelectionModel().select(second);
-
     }
 
     UnaryOperator<TextFormatter.Change> filter = new UnaryOperator<TextFormatter.Change>() {
@@ -155,7 +151,7 @@ public class ConverterController {
         public TextFormatter.Change apply(TextFormatter.Change t) {
 
             if (t.isReplaced())
-                if(t.getText().matches("[^0-9]"))
+                if (t.getText().matches("[^0-9]"))
                     t.setText(t.getControlText().substring(t.getRangeStart(), t.getRangeEnd()));
 
 
@@ -175,142 +171,115 @@ public class ConverterController {
 
     public void comboBoxAction(ActionEvent actionEvent) {
         getTextFieldValueAndCalculate(firstCurrencyTextField.getText());
-        collectDataForChart();
+        collectDataForChart(howManyDaysOnChart);
     }
 
-    public void collectDataForChart(){
-        String firstCurrencyValue = firstCurrency.getValue().substring(0,3);
-        String secondCurrencyValue = secondCurrency.getValue().substring(0,3);
-
-        String todaysDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dateSixMonthsAgo = LocalDate.now().minusMonths(12).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    public void collectDataForChart(int howManyDaysAgo) {
+        String firstCurrencyValue = firstCurrency.getValue().substring(0, 3);
+        String secondCurrencyValue = secondCurrency.getValue().substring(0, 3);
 
         CurrencyData currencyData = new CurrencyData();
 
         ExchangeRatesSeries exchangeRatesSeries1 = new ExchangeRatesSeries();
         ExchangeRatesSeries exchangeRatesSeries2 = new ExchangeRatesSeries();
 
-        if(!firstCurrencyValue.equals("PLN")) {
-            exchangeRatesSeries1 = currencyData.getInfoForChart(firstCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
+        String todaysDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String thisManyDaysAgo = LocalDate.now().minusDays(howManyDaysAgo).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        if (!firstCurrencyValue.equals("PLN")) {
+            exchangeRatesSeries1 = currencyData.getInfoForChart(firstCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
             System.out.println("zebrane dane do czarta dla waluty 1");
         }
-        if(!secondCurrencyValue.equals("PLN")) {
-            exchangeRatesSeries2 = currencyData.getInfoForChart(secondCurrencyValue + "/" + dateSixMonthsAgo + "/" + todaysDate);
+        if (!secondCurrencyValue.equals("PLN")) {
+            exchangeRatesSeries2 = currencyData.getInfoForChart(secondCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
             System.out.println("zebrane dane do czarta dla waluty 2");
         }
 
-        drawChart(exchangeRatesSeries1, exchangeRatesSeries2);
+        if (exchangeRatesSeries1.getRates() == null && exchangeRatesSeries2.getRates() != null) {
+            exchangeRatesSeries1 = currencyData.getInfoForChart(secondCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
+            exchangeRatesSeries1.setCode("PLN");
+            for (Rate element : exchangeRatesSeries1.getRates().getRateList()) {
+                element.setMid(1.0);
+            }
+        }
+        if (exchangeRatesSeries2.getRates() == null && exchangeRatesSeries1.getRates() != null) {
+            exchangeRatesSeries2 = currencyData.getInfoForChart(firstCurrencyValue + "/" + thisManyDaysAgo + "/" + todaysDate);
+            exchangeRatesSeries2.setCode("PLN");
+            for (Rate element : exchangeRatesSeries2.getRates().getRateList()) {
+                element.setMid(1.0);
+            }
+        }
 
+        drawChart(exchangeRatesSeries1, exchangeRatesSeries2);
     }
 
     private void drawChart(ExchangeRatesSeries exchangeRatesSeries1, ExchangeRatesSeries exchangeRatesSeries2) {
-        if (exchangeRatesSeries1.getRates() != null && exchangeRatesSeries2.getRates() != null) {
-            double max = 0;
-            double min = 100;
+        double max = 0;
+        double min = 100;
+        XYChart.Series<String, Double> series = new XYChart.Series();
 
-            List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
-            List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
+        List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
+        List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
 
-            XYChart.Series<String,Double> series = new XYChart.Series();
-            series.setName(exchangeRatesSeries1.getCode() + " to " + exchangeRatesSeries2.getCode() + " Chart");
-            for (int i = 0; i < rateList1.size(); i++) {
-                rateList1.get(i).setMid(rateList1.get(i).getMid() / rateList2.get(i).getMid());
+        series.setName(exchangeRatesSeries1.getCode() + " to " + exchangeRatesSeries2.getCode() + " Chart");
+        for (int i = 0; i < rateList1.size(); i++) {
+            rateList1.get(i).setMid(rateList1.get(i).getMid() / rateList2.get(i).getMid());
 
-                if (rateList1.get(i).getMid() > max) {
-                    max = rateList1.get(i).getMid();
-                }
-                if (rateList1.get(i).getMid() < min) {
-                    min = rateList1.get(i).getMid();
-                }
-
-                series.getData().add(new XYChart.Data(rateList1.get(i).getEffectiveDate(), rateList1.get(i).getMid()));
+            if (rateList1.get(i).getMid() > max) {
+                max = rateList1.get(i).getMid();
             }
-
-            numberAxis.setAutoRanging(false);
-            numberAxis.setLowerBound(min);
-            numberAxis.setUpperBound(max);
-
-            lineChart.getData().retainAll();
-            lineChart.getData().add(series);
-
-            for(XYChart.Data<String,Double> o : series.getData()){
-                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
+            if (rateList1.get(i).getMid() < min) {
+                min = rateList1.get(i).getMid();
             }
-
-        } else if (exchangeRatesSeries1.getRates() == null && exchangeRatesSeries2.getRates() != null) {
-            double max = 0;
-            double min = 100;
-
-            List<Rate> rateList2 = exchangeRatesSeries2.getRates().getRateList();
-
-            XYChart.Series<String, Double> series = new XYChart.Series();
-            series.setName("PLN to " + exchangeRatesSeries2.getCode() + " Chart");
-            for (int i = 0; i < rateList2.size(); i++) {
-                rateList2.get(i).setMid(1 / rateList2.get(i).getMid());
-
-                if (rateList2.get(i).getMid() > max) {
-                    max = rateList2.get(i).getMid();
-                }
-                if (rateList2.get(i).getMid() < min) {
-                    min = rateList2.get(i).getMid();
-                }
-                series.getData().add(new XYChart.Data(rateList2.get(i).getEffectiveDate(), rateList2.get(i).getMid()));
-
-            }
-            numberAxis.setAutoRanging(false);
-            numberAxis.setLowerBound(min);
-            numberAxis.setUpperBound(max);
-
-            lineChart.getData().retainAll();
-            lineChart.getData().add(series);
-
-            for(XYChart.Data<String,Double> o : series.getData()){
-                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
-            }
-
-
-        } else if (exchangeRatesSeries1.getRates() != null && exchangeRatesSeries2.getRates() == null) {
-            double max = 0;
-            double min = 100;
-            List<Rate> rateList1 = exchangeRatesSeries1.getRates().getRateList();
-
-            XYChart.Series<String, Double> series = new XYChart.Series();
-            series.setName(exchangeRatesSeries1.getCode() + " to PLN Chart");
-            for (int i = 0; i < rateList1.size(); i++) {
-
-                if (rateList1.get(i).getMid() > max) {
-                    max = rateList1.get(i).getMid();
-                }
-                if (rateList1.get(i).getMid() < min) {
-                    min = rateList1.get(i).getMid();
-                }
-                series.getData().add(new XYChart.Data(rateList1.get(i).getEffectiveDate(), rateList1.get(i).getMid()));
-
-            }
-            numberAxis.setAutoRanging(false);
-            numberAxis.setLowerBound(min);
-            numberAxis.setUpperBound(max);
-
-            lineChart.getData().retainAll();
-            lineChart.getData().add(series);
-
-            for(XYChart.Data<String,Double> o : series.getData()){
-                setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0,7));
-            }
-
-
+            series.getData().add(new XYChart.Data(rateList1.get(i).getEffectiveDate(), rateList1.get(i).getMid()));
         }
 
+        numberAxis.setAutoRanging(false);
+        numberAxis.setLowerBound(min);
+        numberAxis.setUpperBound(max);
 
+        lineChart.getData().retainAll();
+        lineChart.getData().add(series);
 
-
+        for (XYChart.Data<String, Double> o : series.getData()) {
+            //setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: " + o.getYValue().toString().substring(0, Math.min(o.getYValue().toString().length(), 7)));
+            setTooltip(o.getNode(), "Day: " + o.getXValue() + " Value: 1 " + exchangeRatesSeries1.getCode() + " = " + o.getYValue().toString().substring(0, Math.min(o.getYValue().toString().length(), 7)) + " " + exchangeRatesSeries2.getCode());
+        }
     }
 
     private void setTooltip(Node node, String tooltip) {
-
         Tooltip tooltip1 = new Tooltip(tooltip);
         Tooltip.install(node, tooltip1);
     }
 
+    @FXML
+    private void chartWeek() {
+        howManyDaysOnChart = 7;
+        collectDataForChart(7);
+    }
+
+    @FXML
+    private void chartMonth() {
+        howManyDaysOnChart = 30;
+        collectDataForChart(30);
+    }
+
+    @FXML
+    private void chart3Month() {
+        howManyDaysOnChart = 90;
+        collectDataForChart(90);
+    }
+
+    @FXML
+    private void chart6Month() {
+        howManyDaysOnChart = 180;
+        collectDataForChart(180);
+    }
+
+    @FXML
+    private void chartYear() {
+        howManyDaysOnChart = 360;
+        collectDataForChart(360);
+    }
 
 }
