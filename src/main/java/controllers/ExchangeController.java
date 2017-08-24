@@ -1,7 +1,9 @@
 package controllers;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
@@ -22,6 +25,7 @@ import model.Rate;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +42,8 @@ public class ExchangeController {
     @FXML
     private Label updatedAt;
 
+    ArrayOfExchangeRatesTable arrayOfExchangeRatesTable;
+
 
     public void initExchanger(Stage stage) {
         try {
@@ -53,11 +59,11 @@ public class ExchangeController {
 
     public void initialize(){
         CurrencyData currencyData = new CurrencyData();
-        ArrayOfExchangeRatesTable arrayOfExchangeRatesTable = currencyData.getTableAForAllCurrencies();
+        arrayOfExchangeRatesTable = currencyData.getTableAForAllCurrencies();
         System.out.println("stop");
 
-        populateTableView(arrayOfExchangeRatesTable);
-        calculateExchangeRate(arrayOfExchangeRatesTable);
+        populateTableView();
+        calculateExchangeRate();
     }
 
 
@@ -79,25 +85,26 @@ public class ExchangeController {
         customizeController.initCustomize(stage);
     }
 
-    public void populateTableView(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
-        List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
+    public void populateTableView(){
+        //List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
+        ObservableList<String> list = parseRatelistToStringList(arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList());
         updatedAt.setText("Updated on: " + arrayOfExchangeRatesTable.getExchangeRatesTable().getEffectiveDate() + " via api.nbp.pl");
         exchangeGridPane.setPadding(new Insets(10, 10, 10, 10));
         int verticalColumn = 2;
         int horizontalColumn = 2;
 
-        setLabelStyle("PLN", 0, 1);
-        setLabelStyle("PLN", 1, 0);
+        setBoundaryFrame(list, "PLN", 0, 1);
+        setBoundaryFrame(list, "PLN", 1, 0);
 
-        for(Rate element: rateList){
-            if(element.getCode().equals("GBP") || element.getCode().equals("USD") || element.getCode().equals("EUR") || element.getCode().equals("CHF") || element.getCode().equals("JPY") || element.getCode().equals("DKK") || element.getCode().equals("NOK") || element.getCode().equals("SEK") || element.getCode().equals("RUB")) {
+        for(String element: list){
+            if(element.equals("GBP") || element.equals("USD") || element.equals("EUR") || element.equals("CHF") || element.equals("JPY") || element.equals("DKK") || element.equals("NOK") || element.equals("SEK") || element.equals("RUB")) {
 
                 if(verticalColumn <= 5) {
-                    setLabelStyle(element.getCode(), 0, verticalColumn);
+                    setBoundaryFrame(list, element, 0, verticalColumn);
                     verticalColumn++;
                 }
 
-                setLabelStyle(element.getCode(), horizontalColumn, 0);
+                setBoundaryFrame(list, element, horizontalColumn, 0);
                 horizontalColumn++;
             }
         }
@@ -115,27 +122,55 @@ public class ExchangeController {
         exchangeGridPane.add(label, columnIndex, rowIndex);
     }
 
+    public void setBoundaryFrame(ObservableList<String> list, String selection, int columnIndex, int rowIndex){
+        ComboBox comboBox = new ComboBox();
+        comboBox.setItems(list);
+        comboBox.setOnAction(this::comboBoxAction);
+        int i = 0;
+        for(String element : list){
+            if(element.equals(selection)){
+                comboBox.getSelectionModel().select(i);
+            }
+            i++;
+        }
+        exchangeGridPane.add(comboBox,columnIndex,rowIndex);
+    }
 
-    public void calculateExchangeRate(ArrayOfExchangeRatesTable arrayOfExchangeRatesTable){
+    public void comboBoxAction(Event event){
+        calculateExchangeRate();
+    }
+
+    public ObservableList<String> parseRatelistToStringList(List<Rate> rateList) {
+        ArrayList<String> stringList = new ArrayList<String>();
+        stringList.add("PLN");
+        for (Rate element : rateList) {
+            stringList.add(element.getCode());
+        }
+        ObservableList<String> observableList = FXCollections.observableList(stringList);
+        return observableList;
+    }
+
+
+    public void calculateExchangeRate(){
         List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
 
         double currencyOne = 1;
         double currencyTwo = 1;
         for(int i = 0 ; i <= 5 ; i++){
-            Label label1 = (Label) getNodeByIndex(i, 0);
-            if(label1 != null) {
+            ComboBox combo1 = (ComboBox) getNodeByIndex(i, 0);
+            if(combo1 != null) {
                 for(int j = 0 ; j <= 10 ; j++){
-                    Label label2 = (Label) getNodeByIndex(0, j);
-                    if(label2 != null){
+                    ComboBox combo2 = (ComboBox) getNodeByIndex(0, j);
+                    if(combo2 != null){
                         String nameOfFirstCurrency = "";
                         String nameOfSecondCurrency = "";
 
                         for(Rate rate: rateList){
-                            if(rate.getCode().equals(label1.getText())){
+                            if(rate.getCode().equals(combo1.getValue())){
                                 currencyOne = rate.getMid();
                                 nameOfFirstCurrency = rate.getCode();
                             }
-                            if(rate.getCode().equals(label2.getText())){
+                            if(rate.getCode().equals(combo2.getValue())){
                                 currencyTwo = rate.getMid();
                                 nameOfSecondCurrency = rate.getCode();
                             }
