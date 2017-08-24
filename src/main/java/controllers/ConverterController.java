@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.ArrayOfExchangeRatesTable;
 import model.CurrencyData;
@@ -71,6 +73,9 @@ public class ConverterController {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("views/converter.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
+            stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
 
         } catch (IOException ie) {
             ie.printStackTrace();
@@ -83,6 +88,9 @@ public class ConverterController {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("views/main.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
+            stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
 
         } catch (IOException ie) {
             ie.printStackTrace();
