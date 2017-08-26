@@ -160,6 +160,9 @@ public class ExchangeController {
 
 
     public void calculateExchangeRate(){
+        if(exchangeGridPane.getChildren().size() > 20 ){
+            exchangeGridPane.getChildren().remove(20,120);
+        }
         List<Rate> rateList = arrayOfExchangeRatesTable.getExchangeRatesTable().getRates().getRateList();
 
         double currencyOne = 1;
@@ -190,7 +193,7 @@ public class ExchangeController {
                         String resultString = decimalFormat.format(result);
 
                         setLabelStyle(resultString, j , i);
-                        //unsetTooltips(j,i);
+                        unsetTooltips(j,i);
                         setTooltip(nameOfFirstCurrency, nameOfSecondCurrency, resultString ,j ,i);
                     }
                 }
@@ -203,10 +206,10 @@ public class ExchangeController {
         Tooltip.install(getNodeByIndex(i,j),tooltip);
     }
 
-//    private void unsetTooltips(int j, int i){
-//        Tooltip tooltip = new Tooltip();
-//        Tooltip.uninstall(getNodeByIndex(i,j),tooltip);
-//    }
+    private void unsetTooltips(int j, int i){
+        Tooltip tooltip = new Tooltip();
+        Tooltip.uninstall(getNodeByIndex(i,j),tooltip);
+    }
 
     public Node getNodeByIndex(int row, int column){
         Node result = null;
