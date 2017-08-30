@@ -1,0 +1,18 @@
+# Currency Converter
+Free time project - Application which was build mostly for learning purposes. 
+## Introduction:
+I built this application to improve in designing desktop applications using Java and JavaFX and to learn how to parse data gathered
+from external API (in this case I worked with [NBP Web API](http://api.nbp.pl/)). In this project I used some additional tools - JAXB
+(to unmarshal XML to Java classes) and Jersey (to handle requests to API). 
+## Main functionalities:
+#### 1. Currency calculator together with chart presenting how exchange rate for chosen currencies changed over selected period of time
+
+
+![alt text](https://github.com/kowalewskitomasz/Currency_Converter/blob/master/currency_converter_1.gif "Gif showing how program works")
+
+
+#### 2. Table with exchange rates for each pair of currencies
+
+
+
+![alt text](https://github.com/kowalewskitomasz/Currency_Converter/blob/master/currency_converter_2.gif "Gif showing how program works")
