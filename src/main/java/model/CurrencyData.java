@@ -27,6 +27,7 @@ public class CurrencyData {
         Invocation.Builder invocationBuilder = secondTarget.request(MediaType.APPLICATION_XML_TYPE);
         Response response = invocationBuilder.get();
         File xml = response.readEntity(File.class);
+//        File xml = response.readEntity(File.class);
         return unmarshallerJAXBForTableA(xml);
     }
 
